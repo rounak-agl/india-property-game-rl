@@ -12,7 +12,7 @@
 | M2 First trained agents | Day 5 | ✅ 27 models (9 configs × 3 seeds) |
 | **M3 MVP: AI vs Bot in the UI** | **Day 7** | ⬜ |
 | M4 Feature complete | Day 10 | ⬜ |
-| M5 README + slides + rehearsal | Day 12 | ⬜ |
+| M5 README + slides + rehearsal | Day 12 | 🟨 README + slides done; rehearsal / demo GIF pending |
 
 ## Phase checklist
 ### Phase 0: Setup
@@ -38,9 +38,14 @@
 - ✅ Human vs AI · ✅ Results page · ✅ How it works · ⬜ a11y/responsive · ⬜ smoke test · ⬜ dev script
 
 ### Phase 6: Docs & presentation
-- ⬜ README · ⬜ web slide deck · ⬜ demo GIF · ⬜ rehearsals · ⬜ release v1.0
+- ✅ README · ✅ web slide deck (`presentation/index.html`, 15 slides, N = speaker notes) · ⬜ demo GIF · ⬜ rehearsals · ⬜ release v1.0
 
 ## Session log
+### 2026-10-30: README + slides
+- `README.md` (results table, findings, setup, reproduction, references) and `presentation/index.html` (self-contained, arrow keys, N for notes, prints to PDF), both from summary.json.
+- Still open: team names (Q3), game name (Q1), browser visual check of the UI, demo GIF, merging `feat/engine-core` into `main`.
+- **Next up:** team reviews; open a PR to main; record the demo GIF; rehearse.
+
 ### 2026-10-30: E6 + GPU
 - E6 (1M steps, [256,256], ent 0.03): 71.7 / 46.6 / 49.7 % (per seed vs Fixed 47.7 / 45.9 / 46.1 %), 8.1 min per seed on the CPU. **No improvement:** the plateau at ≈ Greedy's level (46.7% vs Fixed) is robust.
 - Installed CUDA torch; `train.py --device auto|cuda|cpu` (D-020). The GPU only speeds up large networks.

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>India Property Game · RL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root { --saffron:#ea7317; --teal:#14837b; --indigo:#312e81; --ink:#2a2420; --muted:#7a6f66; --paper:#fff8e7; --line:#e4d8c2; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #1e1b4b; font-family: Inter, system-ui, sans-serif; color: var(--ink); }
+  .deck { height: 100%; display: grid; place-items: center; }
+  .slide {
+    display: none; width: min(96vw, calc(96vh * 16 / 9)); aspect-ratio: 16 / 9; background: var(--paper);
+    border-radius: 14px; padding: 4.2% 5.5%; position: relative; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.45); container-type: inline-size;
+  }
+  .slide.active { display: flex; flex-direction: column; gap: 2.2cqi; }
+  .slide::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: .9cqi; background: linear-gradient(90deg, var(--saffron) 33%, #fff 33% 66%, var(--teal) 66%); }
+  h1, h2 { font-family: Fraunces, Georgia, serif; margin: 0; color: var(--indigo); line-height: 1.08; }
+  h1 { font-size: 5.6cqi; }
+  h2 { font-size: 3.6cqi; }
+  .kicker { font-size: 1.35cqi; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; color: var(--saffron); }
+  p, li, td, th { font-size: 1.75cqi; line-height: 1.45; }
+  ul { margin: 0; padding-left: 1.2em; display: grid; gap: .6cqi; }
+  .muted { color: var(--muted); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 3cqi; flex: 1; min-height: 0; }
+  .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2cqi; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 1.2cqi; padding: 1.8cqi 2cqi; }
+  .card h3 { font-family: Fraunces, serif; margin: 0 0 .6cqi; font-size: 2cqi; color: var(--ink); }
+  .big { font-family: Fraunces, serif; font-size: 5cqi; font-weight: 800; color: var(--saffron); line-height: 1; }
+  .fig { flex: 1; min-height: 0; display: flex; justify-content: center; }
+  .fig img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; background: #fff; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: .45cqi .8cqi; border-bottom: 1px solid var(--line); font-size: 1.45cqi; }
+  th { color: var(--muted); font-weight: 600; }
+  tr.hl td { background: rgba(234,115,23,.12); font-weight: 700; }
+  pre { background: #1e1b4b; color: #fde68a; padding: 1.6cqi 2cqi; border-radius: 1cqi; font-size: 1.5cqi; margin: 0; white-space: pre-wrap; }
+  .tag { display: inline-block; padding: .2cqi .8cqi; border-radius: 99px; background: var(--indigo); color: #fff; font-size: 1.2cqi; font-weight: 600; }
+  .title-slide { justify-content: center; background:
+      radial-gradient(circle at 85% 20%, rgba(234,115,23,.18), transparent 45%),
+      repeating-conic-gradient(from 0deg at 85% 20%, rgba(49,46,129,.05) 0 10deg, transparent 10deg 20deg), var(--paper); }
+  .logo { display: inline-grid; place-items: center; width: 8cqi; height: 8cqi; border-radius: 50%; background: var(--saffron); color: #fff; font-family: Fraunces, serif; font-size: 5cqi; font-weight: 800; }
+  .board-mini { display: grid; grid-template-columns: repeat(11, 1fr); grid-template-rows: repeat(11, 1fr); aspect-ratio: 1; height: 100%; border: 2px solid var(--ink); background: #f6ecd2; }
+  .board-mini span { border: .5px solid var(--ink); background: #fffaf0; }
+  .board-mini .c { background: #fff3d6; }
+  .board-mini .center { grid-row: 2/11; grid-column: 2/11; border: 0; background: var(--paper); display: grid; place-items: center; font-family: Fraunces, serif; color: var(--indigo); font-size: 2.2cqi; font-weight: 800; text-align: center; }
+  .notes { display: none; }
+  .nav { position: fixed; bottom: 14px; right: 18px; color: #c7d2fe; font: 600 13px Inter, sans-serif; display: flex; gap: 10px; align-items: center; }
+  .nav button { background: rgba(255,255,255,.12); color: #fff; border: 0; border-radius: 99px; padding: 6px 12px; font: inherit; cursor: pointer; }
+  .notes-panel { position: fixed; left: 18px; bottom: 14px; max-width: 46vw; color: #e0e7ff; font: 14px/1.45 Inter, sans-serif; background: rgba(0,0,0,.45); padding: 10px 14px; border-radius: 10px; display: none; }
+  body.show-notes .notes-panel { display: block; }
+  @media print {
+    html, body { background: #fff; }
+    .slide { display: flex !important; flex-direction: column; page-break-after: always; box-shadow: none; width: 100%; }
+    .nav, .notes-panel { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide title-slide">
+  <span class="logo">₹</span>
+  <span class="kicker">AI course project · reinforcement learning</span>
+  <h1>Teaching an AI to play an<br/>Indian property-trading game</h1>
+  <p class="muted">DQN · PPO · MaskablePPO vs rule-based bots, with an explainable web game UI</p>
+  <p class="muted">Team: <em>names to be added</em></p>
+  <div class="notes">We built an original Indian-themed board game following Monopoly's rules, trained RL agents to play it, ran controlled experiments, and built a web game where you can watch or play against the AI and see why it decides what it decides.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">01 · Problem</span>
+  <h2>Why is this game hard for RL?</h2>
+  <div class="cols">
+    <ul>
+      <li><strong>Chance + strategy:</strong> dice and cards decide where you land; you decide what to buy and when to build.</li>
+      <li><strong>Delayed payoff:</strong> a purchase costs cash now and earns rent many turns later.</li>
+      <li><strong>Long games:</strong> 100+ rounds; a win or loss signal only at the end.</li>
+      <li><strong>Huge action space in the full game:</strong> 2,922 actions with trading (Bonjour, Haliem et al.).</li>
+    </ul>
+    <div class="card">
+      <h3>Our question</h3>
+      <p>In a 2-player game without trading, can an RL agent learn to beat a tuned rule-based player? And how much do <strong>environment design</strong>, <strong>action masking</strong> and <strong>reward shaping</strong> matter?</p>
+    </div>
+  </div>
+  <div class="notes">Frame the research question. Emphasise that we measure the effect of design choices, not just one win rate.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">02 · Literature</span>
+  <h2>Three papers, one arc</h2>
+  <div class="cols3">
+    <div class="card"><span class="tag">2014</span><h3>Bailis, Fachantidis, Vlahavas</h3><p>Monopoly as an MDP. Q(λ) + neural network; actions per group: spend / sell / nothing. 69.4% of wins in a 3-player table with fixed-policy and random agents.</p></div>
+    <div class="card"><span class="tag">2019</span><h3>Arun et al. (TENCON, India)</h3><p>Buy / do-nothing only, a feed-forward network with experience replay. A richer state representation helped.</p></div>
+    <div class="card"><span class="tag">2022</span><h3>Bonjour, Haliem et al. (IEEE TETCI)</h3><p>Full 4-player game with trading; 240-dim state, 2,922 actions, action masking. Weighted net-worth reward. Hybrid PPO: 91.65% vs fixed-policy agents.</p></div>
+  </div>
+  <p class="muted">We took the <strong>reduced scope</strong> of 2014/2019 and the <strong>net-worth reward + masking</strong> of 2022. We checked each paper's claims against the papers themselves.</p>
+  <div class="notes">Mention we corrected an AI-generated blueprint: the 69.4% was a 3-player result, Bailis used Q(lambda) not DQN, and the 2022 paper's first author is Bonjour.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">03 · The environment</span>
+  <h2>An original Indian board, Monopoly's rules</h2>
+  <div class="cols" style="grid-template-columns: 1.1fr 1fr">
+    <ul>
+      <li>40 spaces: 22 cities (Guwahati ₹60 … Mumbai ₹400) in 8 colour groups, 4 railway stations, 2 utilities.</li>
+      <li>₹1,500 start, ₹200 for passing GO, classic rent tables, houses → hotel.</li>
+      <li>Jail (doubles or ₹50), two original 16-card decks (“Diwali bonus!”).</li>
+      <li>Forced liquidation → bankruptcy; 200-round limit, then net worth decides.</li>
+      <li><strong>Not included:</strong> trading, auctions (as in Bailis / Arun).</li>
+      <li>Pure-Python engine: ~24,000 games/min; 42 tests, including invariant checks over 3,000 random games.</li>
+    </ul>
+    <div class="fig"><div class="board-mini" id="miniBoard"></div></div>
+  </div>
+  <div class="notes">Original name, art and card text; no Hasbro/Funskool branding. The engine is a generator-driven state machine used by training, the API and human play.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">04 · MDP design</span>
+  <h2>Two ways to pose the problem</h2>
+  <div class="cols">
+    <div class="card">
+      <h3>Env A · the original blueprint</h3>
+      <ul>
+        <li>State: 32 numbers (positions, cash, owner code per property)</li>
+        <li>Actions: Pass / Buy / Build, asked after <em>every</em> move</li>
+        <li>Impossible actions silently become Pass</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Env B · our design</h3>
+      <ul>
+        <li>State: 133 numbers (owner, houses, mortgage per property, plus decision context)</li>
+        <li>Actions: Pass / Buy / Build on 1 of 8 groups</li>
+        <li>Asked only at <strong>real decisions</strong>; illegal actions <strong>masked</strong> (MaskablePPO)</li>
+      </ul>
+    </div>
+  </div>
+  <p class="muted">The opponent bot, dice and jail rule are part of the environment. The agent's seat is fixed, and who moves first is random in every game.</p>
+  <div class="notes">This is our main experimental factor (E2).</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">05 · Reward</span>
+  <h2>Reward the change, not the level</h2>
+  <pre>nw    = cash + Σ (price − mortgage) · b + houses · house_cost      b = 1.5, or 2.0 in a full colour set
+share = nw_agent / (nw_agent + nw_opponent)
+
+blueprint:  r_t = share_t                       ← always positive: pays the agent to make games longer
+ours:       r_t = share_t − share_(t−1)         ← potential-based shaping (Ng et al. 1999)
+            + 10 for a win / −10 for a loss</pre>
+  <p>Weighted net worth comes from Bonjour, Haliem et al. (Eq. 2–3). We also tested <strong>absolute share</strong>, <strong>sparse win/loss only</strong> and <strong>no property bonus</strong> (b = 1).</p>
+  <div class="notes">The prediction: absolute share rewards survival time. The results confirm it: 139 vs 109 rounds and half the win rate.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">06 · Setup</span>
+  <h2>Agents, baselines, evaluation</h2>
+  <div class="cols3">
+    <div class="card"><h3>Agents</h3><p>DQN (value-based), PPO and MaskablePPO (policy gradient) from Stable-Baselines3; MLP [128, 128]; 300k steps (E6: 1M, [256, 256]).</p></div>
+    <div class="card"><h3>Opponents</h3><p><strong>Random</strong>: buys 50% of the time. <strong>Fixed-Policy</strong>: spends only above ₹350 (Bailis 2014). <strong>Greedy</strong>: always buys and builds.</p></div>
+    <div class="card"><h3>Evaluation</h3><p>3 seeds × 1,000 games per opponent, random first player, 95% Wilson confidence intervals. 10 configurations, 30 training runs.</p></div>
+  </div>
+  <p class="muted">Baselines: Fixed beats Random 74.1%, Greedy beats Random 72.7%, Greedy vs Fixed 46.7%.</p>
+  <div class="notes">Every number in these slides is read from results/summary/summary.json.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">07 · Results</span>
+  <h2>Final win rates</h2>
+  <div class="fig"><img src="assets/final_comparison.png" alt="Bar chart of final win rates per configuration against Random, Fixed and Greedy bots" /></div>
+  <div class="notes">Point at MaskablePPO on Env B (47% vs Fixed) against the blueprint setups (10–16%), and the empty bar for PPO on Env B without masks.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">07 · Results</span>
+  <h2>The numbers</h2>
+  <table>
+    <thead><tr><th>Experiment</th><th>Configuration</th><th>vs Random</th><th>vs Fixed</th><th>vs Greedy</th></tr></thead>
+    <tbody>
+      <tr><td>E1</td><td>DQN · Env A (blueprint)</td><td>25.3%</td><td>15.8%</td><td>19.3%</td></tr>
+      <tr><td>E1</td><td>PPO · Env A (blueprint)</td><td>19.1%</td><td>10.0%</td><td>13.5%</td></tr>
+      <tr><td>E2</td><td>DQN · Env B, no mask</td><td>38.8%</td><td>25.0%</td><td>26.5%</td></tr>
+      <tr><td>E2</td><td>PPO · Env B, no mask</td><td>0.0%</td><td>0.0%</td><td>0.0%</td></tr>
+      <tr class="hl"><td>E2</td><td>MaskablePPO · Env B</td><td>71.5%</td><td>47.2%</td><td>49.7%</td></tr>
+      <tr><td>E3</td><td>absolute-share reward</td><td>49.0%</td><td>23.2%</td><td>25.8%</td></tr>
+      <tr><td>E3</td><td>sparse reward</td><td>70.9%</td><td>46.4%</td><td>48.2%</td></tr>
+      <tr><td>E4</td><td>no property bonus</td><td>70.3%</td><td>46.9%</td><td>49.5%</td></tr>
+      <tr><td>E5</td><td>trained vs mixed bots</td><td>70.6%</td><td>46.6%</td><td>48.9%</td></tr>
+      <tr><td>E6</td><td>1M steps, larger network</td><td>71.7%</td><td>46.6%</td><td>49.7%</td></tr>
+    </tbody>
+  </table>
+  <p class="muted">3 seeds × 1,000 games per cell; 95% CIs are about ±1.8 points.</p>
+</section>
+
+<section class="slide">
+  <span class="kicker">07 · Results</span>
+  <h2>Learning curves</h2>
+  <div class="fig"><img src="assets/learning_curves.png" alt="Learning curves of win rate against the Fixed-Policy bot over training steps" /></div>
+  <div class="notes">MaskablePPO variants rise quickly and flatten around 45–50%. The blueprint setups stay low.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">08 · Findings</span>
+  <h2>What we learned</h2>
+  <div class="cols">
+    <ul>
+      <li><strong>Design beats algorithm:</strong> decision points + masking took MaskablePPO from 10% (PPO on Env A) to 47% vs Fixed.</li>
+      <li><strong>No mask can mean collapse:</strong> unmasked PPO on Env B made 90% invalid choices, never bought, and won 0%.</li>
+      <li><strong>The blueprint reward misleads:</strong> absolute share gave longer games (139 vs 109 rounds) and half the win rate.</li>
+    </ul>
+    <ul>
+      <li><strong>Robust plateau:</strong> sparse reward, no bonus, mixed opponents and 3× longer training all land at 46–47% vs Fixed.</li>
+      <li><strong>The agent learned "Greedy":</strong> it buys 84–96% of offers in every group, so it matches the Greedy bot (46.7% vs Fixed).</li>
+      <li>Without trading or auctions, there is little room left to out-play a sensible threshold rule. Much of the strategy lives in the actions this scope removes.</li>
+    </ul>
+  </div>
+  <div class="notes">Be honest: we did not beat the Fixed bot. The contribution is a controlled study showing which design choices matter, plus the plateau analysis.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">09 · System</span>
+  <h2>From engine to explainable game UI</h2>
+  <div class="cols">
+    <pre>React + TypeScript UI
+  board · tokens · dice · X-Ray · results
+          │  REST /api
+FastAPI sessions  ──  trained models (SB3)
+          │
+Gymnasium envs A/B ── train / evaluate / plots
+          │
+Pure-Python engine ◀── Random / Fixed / Greedy bots</pre>
+    <ul>
+      <li><strong>Watch AI vs Bot:</strong> step or auto-play, animated tile-by-tile movement.</li>
+      <li><strong>Play vs AI:</strong> roll, buy, build and handle jail against the trained agent.</li>
+      <li><strong>AI Brain X-Ray:</strong> action probabilities or Q-values, legal mask, critic value and net-worth share for every decision.</li>
+      <li><strong>Results page</strong> fed by the same summary JSON as these slides.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide">
+  <span class="kicker">10 · Live demo</span>
+  <h2>Let's play</h2>
+  <div class="cols">
+    <div class="card">
+      <h3>Run it</h3>
+      <pre>uvicorn src.api.main:app --port 8000
+cd frontend && npm run dev
+open http://localhost:5173</pre>
+    </div>
+    <ul>
+      <li>Watch the best agent (MaskablePPO) against the Fixed bot.</li>
+      <li>Open the X-Ray: why did it buy Mumbai for ₹400?</li>
+      <li>Hand the laptop to a volunteer: Play vs AI.</li>
+      <li>Results page: the same charts, live from the experiment data.</li>
+    </ul>
+  </div>
+  <div class="notes">Keep a recorded backup GIF in case the live demo fails.</div>
+</section>
+
+<section class="slide">
+  <span class="kicker">11 · Wrap-up</span>
+  <h2>Limitations & future work</h2>
+  <div class="cols">
+    <ul>
+      <li>2 players, no trading or auctions; jail decided by a fixed rule (hybrid idea).</li>
+      <li>Prices use the classic structure in ₹; the official Indian-edition values weren't available.</li>
+      <li>Only 3 seeds per configuration; agents are evaluated against bots, not against people.</li>
+    </ul>
+    <ul>
+      <li>Add trading and auctions, where the 2022 paper found the strategic depth.</li>
+      <li>Self-play or league training instead of fixed opponents.</li>
+      <li>Hybrid agent (DRL + rules) as in Bonjour, Haliem et al.</li>
+      <li>A human study with the Play vs AI mode.</li>
+    </ul>
+  </div>
+  <p class="muted">Code, docs and all results: github.com/rounak-agl/india-property-game-rl · Thank you!</p>
+</section>
+
+</div>
+<div class="notes-panel" id="notesPanel"></div>
+<div class="nav"><button id="prev" aria-label="Previous slide">←</button><span id="count"></span><button id="next" aria-label="Next slide">→</button><span>· N = notes</span></div>
+<script>
+  const slides = [...document.querySelectorAll('.slide')]
+  let i = 0
+  try { i = Math.min(+location.hash.slice(1) || 0, slides.length - 1) } catch (e) {}
+  const show = (n) => {
+    i = Math.max(0, Math.min(slides.length - 1, n))
+    slides.forEach((s, k) => s.classList.toggle('active', k === i))
+    document.getElementById('count').textContent = `${i + 1} / ${slides.length}`
+    document.getElementById('notesPanel').textContent = slides[i].querySelector('.notes')?.textContent ?? ''
+    history.replaceState(null, '', '#' + i)
+  }
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) show(i + 1)
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) show(i - 1)
+    if (e.key === 'n' || e.key === 'N') document.body.classList.toggle('show-notes')
+  })
+  document.getElementById('prev').onclick = () => show(i - 1)
+  document.getElementById('next').onclick = () => show(i + 1)
+  // Mini board: 40 perimeter cells with colour bands for the 8 groups.
+  const colors = { 1:'#8a5a32', 3:'#8a5a32', 6:'#5fb8e6', 8:'#5fb8e6', 9:'#5fb8e6', 11:'#d6458f', 13:'#d6458f', 14:'#d6458f',
+    16:'#ef7d1a', 18:'#ef7d1a', 19:'#ef7d1a', 21:'#d63a2f', 23:'#d63a2f', 24:'#d63a2f', 26:'#e8b81d', 27:'#e8b81d', 29:'#e8b81d',
+    31:'#1f9a55', 32:'#1f9a55', 34:'#1f9a55', 37:'#27408b', 39:'#27408b' }
+  const cell = (k) => k === 0 ? [11, 11] : k < 10 ? [11, 11 - k] : k === 10 ? [11, 1] : k < 20 ? [21 - k, 1]
+    : k === 20 ? [1, 1] : k < 30 ? [1, k - 19] : k === 30 ? [1, 11] : [k - 29, 11]
+  const mb = document.getElementById('miniBoard')
+  for (let k = 0; k < 40; k++) {
+    const s = document.createElement('span'), [r, c] = cell(k)
+    s.style.gridRow = r; s.style.gridColumn = c
+    if (k % 10 === 0) s.className = 'c'
+    if (colors[k]) s.style.background = `linear-gradient(${colors[k]} 0 0) top / 100% 30% no-repeat, #fffaf0`
+    mb.appendChild(s)
+  }
+  const ctr = document.createElement('div'); ctr.className = 'center'; ctr.innerHTML = '₹<br>40 spaces'; mb.appendChild(ctr)
+  show(i)
+</script>
+</body>
+</html>
