@@ -1,0 +1,129 @@
+# Delivery Phases
+
+> 4 people · ~12 working days · MVP cut line on **Day 7**.
+> Roles: **A** = Game Engine · **B** = RL & Experiments · **C** = Backend API & Integration · **D** = Frontend/UI.
+> Everyone owns their part of the README, slides and memory docs.
+> Track status in [`memory/PROGRESS.md`](memory/PROGRESS.md). Log every non-trivial choice in [`memory/DECISIONS.md`](memory/DECISIONS.md).
+
+```
+Day:        1    2    3    4    5    6    7    8    9   10   11   12
+P0 Setup    ██
+P1 Engine   ░░███████████                                              (A lead)
+P2 RL core            ░░████████                                       (B lead)
+P3 API/UI   ░░░░░░███████████████                                      (C, D)
+            ────────────────────────── MVP cut line (Day 7) ──
+P4 Experim.                     ██████████████                         (B)
+P5 Features                          ███████████████                   (C, D)
+P6 Docs/Pres                                        ███████████        (all)
+```
+░ = can start early against mocks/interfaces.
+
+---
+
+## Phase 0: Setup & alignment (Day 1, everyone)
+**Goal:** everyone can run the project, the interfaces are agreed, and the open questions are resolved.
+
+| Task | Owner |
+|---|---|
+| Create GitHub repo, branch rules, PR template; add `.gitignore`, `pyproject.toml`, `requirements.txt` | C |
+| Python venv + `pytest`/`ruff` working; Vite app scaffolded (`npm create vite@latest frontend -- --template react-ts`) | C, D |
+| Walk through `TECH_SPEC.md` together; agree the event schema (§5) and API (§6) | all |
+| Resolve `memory/OPEN_QUESTIONS.md` Q1–Q6 (name, prices, members, deadline/rubric) | all |
+| Write `board_data.py` from TECH_SPEC §3.1 | A |
+
+**Exit criteria:** `pytest` runs (even with 0 tests), `npm run dev` shows a page, open questions answered or given an owner.
+
+## Phase 1: Game engine (Days 1–3, A lead; B reviews)
+| Task | Owner |
+|---|---|
+| `state.py` dataclasses (PlayerState, TileState, GameState) + `events.py` | A |
+| `rules.py`: rent, buy, build, liquidation, bankruptcy, net worth (raw + weighted) | A |
+| `cards.py`: two original 16-card decks + effects | A (D writes the themed card text) |
+| `engine.py`: turn loop with controllers, doubles, jail, 200-round end, event emission, seeding | A |
+| `bots/`: Random, Fixed-Policy (Bailis 350/150), Greedy, shared jail policy | B |
+| Tests: one per rule (TECH_SPEC §8), invariants, 10k-game soak test, speed benchmark | A, B |
+
+**Exit criteria (M1):** all tests green · 10k random games, zero invariant violations · ≥ 2,000 games/min · Fixed bot beats Random bot clearly (Bailis reported 97% in their setting; we record ours).
+
+## Phase 2: RL core (Days 3–5, B lead; A assists)
+| Task | Owner |
+|---|---|
+| `observation.py` + `env_a_blueprint.py` (32-dim, Discrete(3)) | B |
+| `env_b_masked.py` (133-dim, Discrete(10), `action_masks()`) | B, A |
+| `rewards.py` with 3 modes + configurable `b`, `c` | B |
+| `check_env` + env unit tests (mask correctness, determinism) | B |
+| `train.py` (YAML config → model + logs), `callbacks.py` (eval every 10k steps) | B |
+| `evaluate.py` (1,000 games, Wilson CI) | B |
+| First runs: PPO on A, MaskablePPO on B vs Fixed bot, 1 seed | B |
+
+**Exit criteria (M2):** two trained models saved in `models/` with metadata JSON and first eval numbers in `results/`.
+
+## Phase 3: API + board UI (Days 2–7, C and D; parallel with P1/P2)
+| Task | Owner |
+|---|---|
+| FastAPI skeleton with **mock** events (Day 2) so D isn't blocked | C |
+| `sessions.py` on the real engine; controllers for AI / bot / human | C |
+| `agents.py`: load SB3 models; X-Ray (PPO probs via `policy.get_distribution`, MaskablePPO masked probs, DQN `q_net`); `xray.py` shared with B | C, B |
+| Board grid, tiles, colour bands, centre area, original logo and tokens | D |
+| Event playback: dice animation, tile-by-tile token movement, toasts, owner markers, houses | D |
+| Player panels + **Watch AI vs Bot** controls (step / auto / pause / reset / speed) | D |
+| X-Ray panel v1 (bars + legal mask + chosen action) | D |
+
+**Exit criteria (M3 = MVP, Day 7):** in the browser, a full AI-vs-Bot game plays to the end with a trained model, animated tokens and a working X-Ray. **If anything slips, everything after this line is optional polish.**
+
+## Phase 4: Experiments & analysis (Days 6–10, B lead; A helps run seeds)
+| Task | Owner |
+|---|---|
+| Run E1–E4 (TECH_SPEC §4.6), 3 seeds each; split runs across team laptops | B, A |
+| `make_plots.py`: learning curves, comparison bars with CIs, ablation table → `results/figures` + `results/summary/*.json` | B |
+| Behaviour analysis: groups bought, cash buffer, build timing, buy rate by price | A |
+| E5 generalisation *(stretch)* | B |
+| Write the results narrative (what worked, what didn't, why), including negative results | B |
+
+**Exit criteria:** every number on the Results slide comes from `results/summary/*.json`, regenerated by one command.
+
+## Phase 5: Product features & polish (Days 7–10, C and D)
+| Task | Owner |
+|---|---|
+| **Human vs AI** mode: roll button, buy/pass dialog, build menu, jail choice; illegal actions blocked | D, C |
+| **Results page**: Recharts from `/api/results` | D |
+| **How it works** page: MDP diagram, state/action/reward, papers | D, B |
+| Property card modal, game-over screen with stats, sound toggle *(should)* | D |
+| Responsive layout, keyboard navigation, reduced motion, colour-blind labels | D |
+| API tests, Playwright smoke test, error handling (expired session, model missing) | C |
+| One-command run script (`make dev` or `scripts/dev.sh`) | C |
+
+**Exit criteria (M4):** all PRD "Must" requirements done; smoke test passes; a teammate who didn't build the UI can run it from the README alone.
+
+## Phase 6: Documentation, presentation & rehearsal (Days 10–12, everyone)
+| Task | Owner |
+|---|---|
+| README: overview, GIF, architecture, setup, commands, results, citations, credits | C (all contribute) |
+| Web slide deck (~14 slides, outline below) with speaker notes and embedded figures/GIF | D (layout), B (results), A (method) |
+| Record a demo GIF/video as backup in case the live demo fails | D |
+| Viva prep: likely questions + answers (see `memory/RESEARCH_NOTES.md` §4) | all |
+| 2 full rehearsals, ≤ 10 min, with live demo | all |
+| Final memory-docs update + tag release `v1.0` | all |
+
+**Exit criteria (M5):** submission package complete; the rehearsal is on time.
+
+### Slide outline (draft)
+1. Title + live board screenshot
+2. Problem: why Monopoly is hard for RL
+3. Literature: Bailis 2014 → Arun 2019 → Bonjour/Haliem 2022
+4. Our scope & rules (and what we left out, and why)
+5. The Indian board environment
+6. MDP formulation: Env A vs Env B (state, actions, masking)
+7. Reward design: weighted net worth, delta-share, ±c
+8. Agents & baselines (DQN, PPO, MaskablePPO; Random, Fixed, Greedy)
+9. Results: learning curves
+10. Results: comparison + ablations
+11. What the agent learned (behaviour analysis)
+12. System architecture (engine / RL / API / UI)
+13. Live demo: Watch + X-Ray + Human vs AI
+14. Limitations, future work, team contributions
+
+## Definition of Done (every task)
+- Code is formatted with ruff/prettier; tests added or updated and passing.
+- PR reviewed by one teammate.
+- `memory/PROGRESS.md` updated; any design choice logged in `memory/DECISIONS.md`.

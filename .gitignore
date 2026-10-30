@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# RL artifacts (large / regenerated)
+models/*.zip
+results/raw/
+runs/
+tb_logs/
+
+# Node
+node_modules/
+frontend/dist/
+presentation/dist/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+.env
