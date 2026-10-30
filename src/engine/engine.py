@@ -79,9 +79,12 @@ class Game:
         first_player: int | None = None,
         max_rounds: int = DEFAULT_MAX_ROUNDS,
         blueprint_players: Collection[int] = (),
+        pause_each_turn: bool = False,
     ):
         """`blueprint_players` get one Pass/Buy/Build "turn" decision after every move
-        instead of separate buy and build decisions (Env A, faithful to the blueprint)."""
+        instead of separate buy and build decisions (Env A, faithful to the blueprint).
+        `pause_each_turn` yields a "next_turn" decision (only legal action: 0) before every
+        turn, so a UI can replay the game one turn at a time."""
         self.rng = random.Random(seed)
         if first_player is None:
             first_player = self.rng.randrange(2)
@@ -89,6 +92,7 @@ class Game:
         self.state = GameState(players=players, first_player=first_player, current=first_player)
         self.max_rounds = max_rounds
         self.blueprint_players = frozenset(blueprint_players)
+        self.pause_each_turn = pause_each_turn
         self.decks = {"chance": Deck(CHANCE_CARDS, self.rng), "chest": Deck(CHEST_CARDS, self.rng)}
         self.jail_card_sources: dict[int, list[str]] = {0: [], 1: []}
         self.events: list[Event] = []
@@ -154,6 +158,8 @@ class Game:
 
     def _turn(self, p: int) -> Flow:
         s, pl = self.state, self.state.players[p]
+        if self.pause_each_turn:
+            yield Decision("next_turn", p, [0])
         self._emit("turn_start", p)
         if pl.in_jail:
             result = yield from self._jail_phase(p)
@@ -447,6 +453,10 @@ class Game:
         s = self.state
         s.finished, s.winner, s.end_reason = True, winner, reason
         self._emit("game_over", None, winner=winner, reason=reason, **data)
+
+    def log_event(self, type_: str, player: int | None, **data) -> None:
+        """Add an external event (e.g. an AI "decision" explanation) to the game log."""
+        self._emit(type_, player, **data)
 
     def _emit(self, type_: str, player: int | None, **data) -> None:
         self.events.append(Event(len(self.events), self.state.round, player, type_, data))

@@ -1,0 +1,5 @@
+# E1 + E2 baseline: PPO in the blueprint setting
+name: e1_ppo_a
+algo: ppo
+env: A
+use_masking: false

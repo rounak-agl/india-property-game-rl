@@ -1,0 +1,5 @@
+# E2: DQN on our env design (SB3 DQN has no masking support)
+name: e2_dqn_b_unmasked
+algo: dqn
+env: B
+use_masking: false

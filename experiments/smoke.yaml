@@ -1,0 +1,10 @@
+# Tiny run to check the pipeline end to end (~1 min).
+name: smoke
+algo: maskppo
+env: B
+opponent: fixed
+steps: 20000
+seeds: [0]
+eval_every: 10000
+eval_games: 20
+final_games: 50

@@ -1,0 +1,5 @@
+# E2: our env design without masking (invalid actions act as Pass)
+name: e2_ppo_b_unmasked
+algo: ppo
+env: B
+use_masking: false

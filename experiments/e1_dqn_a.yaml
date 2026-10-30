@@ -1,0 +1,5 @@
+# E1: DQN in the blueprint setting (Arun et al. 2019 lineage)
+name: e1_dqn_a
+algo: dqn
+env: A
+use_masking: false

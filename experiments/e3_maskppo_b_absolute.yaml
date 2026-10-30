@@ -1,0 +1,5 @@
+# E3: blueprint reward (absolute net-worth share every step)
+name: e3_maskppo_b_absolute
+algo: maskppo
+env: B
+reward: {mode: absolute_share, terminal: 10.0}

@@ -1,0 +1,5 @@
+# E3: win/loss reward only
+name: e3_maskppo_b_sparse
+algo: maskppo
+env: B
+reward: {mode: sparse, terminal: 10.0}

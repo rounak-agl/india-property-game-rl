@@ -1,0 +1,5 @@
+# E5 (stretch): train against a mix of Random / Fixed / Greedy bots
+name: e5_maskppo_b_mixed
+algo: maskppo
+env: B
+opponent: mixed

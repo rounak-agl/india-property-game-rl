@@ -1,0 +1,5 @@
+# E4: no property bonus in the net worth (b = 1.0 instead of 1.5 / 2.0)
+name: e4_maskppo_b_nobonus
+algo: maskppo
+env: B
+reward: {mode: delta_share, terminal: 10.0, b_single: 1.0, b_monopoly: 1.0}

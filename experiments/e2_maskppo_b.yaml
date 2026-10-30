@@ -1,0 +1,4 @@
+# E2 main agent: decision points + action masking. Also the E3/E4 reference run.
+name: e2_maskppo_b
+algo: maskppo
+env: B

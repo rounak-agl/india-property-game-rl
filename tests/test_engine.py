@@ -71,3 +71,19 @@ def test_blueprint_mode_soak():
         g = Game(seed=seed, blueprint_players={0})
         g.play([RandomTurn(seed), RandomBot(seed)])
         assert g.state.finished and not g.check_invariants()
+
+
+def test_pause_each_turn_yields_next_turn_decisions():
+    from src.bots import FixedPolicyBot
+
+    g = Game(seed=4, pause_each_turn=True)
+    d = g.advance()
+    assert d.kind == "next_turn" and d.legal == [0]
+    bot, turns = FixedPolicyBot(), 0
+    while d is not None:
+        if d.kind == "next_turn":
+            turns += 1
+            d = g.act(0)
+        else:
+            d = g.act(bot.decide(g, d))
+    assert turns == sum(1 for e in g.events if e.type == "turn_start")
