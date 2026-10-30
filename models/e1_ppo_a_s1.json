@@ -1,0 +1,46 @@
+{
+  "run_id": "e1_ppo_a_s1",
+  "algo": "ppo",
+  "env": "A",
+  "seed": 1,
+  "steps": 300000,
+  "train_seconds": 143.2,
+  "trained_at": "2026-10-30T09:48:37+00:00",
+  "config": {
+    "name": "e1_ppo_a",
+    "algo": "ppo",
+    "env": "A",
+    "opponent": "fixed",
+    "use_masking": false,
+    "reward": {
+      "mode": "delta_share",
+      "terminal": 10.0
+    },
+    "steps": 300000,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "n_envs": 8,
+    "net_arch": [
+      128,
+      128
+    ],
+    "algo_kwargs": {},
+    "eval_every": 20000,
+    "eval_games": 100,
+    "eval_opponents": [
+      "fixed",
+      "random"
+    ],
+    "final_games": 1000
+  },
+  "algo_kwargs": {
+    "learning_rate": 0.0003,
+    "n_steps": 1024,
+    "batch_size": 256,
+    "gamma": 0.99,
+    "ent_coef": 0.01
+  }
+}
