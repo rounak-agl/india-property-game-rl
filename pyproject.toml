@@ -1,0 +1,16 @@
+[project]
+name = "india-property-game-rl"
+version = "0.1.0"
+description = "Indian-themed property-trading board game with explainable RL agents"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
