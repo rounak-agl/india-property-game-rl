@@ -1,0 +1,92 @@
+{
+  "run_id": "e4_maskppo_b_nobonus_s1",
+  "meta": {
+    "run_id": "e4_maskppo_b_nobonus_s1",
+    "algo": "maskppo",
+    "env": "B",
+    "seed": 1,
+    "steps": 300000,
+    "train_seconds": 147.2,
+    "trained_at": "2026-10-30T10:10:07+00:00",
+    "config": {
+      "name": "e4_maskppo_b_nobonus",
+      "algo": "maskppo",
+      "env": "B",
+      "opponent": "fixed",
+      "use_masking": true,
+      "reward": {
+        "mode": "delta_share",
+        "terminal": 10.0,
+        "b_single": 1.0,
+        "b_monopoly": 1.0
+      },
+      "steps": 300000,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n_envs": 8,
+      "net_arch": [
+        128,
+        128
+      ],
+      "algo_kwargs": {},
+      "eval_every": 20000,
+      "eval_games": 100,
+      "eval_opponents": [
+        "fixed",
+        "random"
+      ],
+      "final_games": 1000
+    },
+    "algo_kwargs": {
+      "learning_rate": 0.0003,
+      "n_steps": 1024,
+      "batch_size": 256,
+      "gamma": 0.99,
+      "ent_coef": 0.01
+    }
+  },
+  "results": [
+    {
+      "opponent": "random",
+      "games": 1000,
+      "wins": 718,
+      "losses": 282,
+      "draws": 0,
+      "win_rate": 0.718,
+      "ci_low": 0.6893170177459294,
+      "ci_high": 0.7450144544704043,
+      "mean_rounds": 103.508,
+      "bankruptcy_rate": 0.884,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "fixed",
+      "games": 1000,
+      "wins": 479,
+      "losses": 521,
+      "draws": 0,
+      "win_rate": 0.479,
+      "ci_low": 0.44817658770904456,
+      "ci_high": 0.5099841420315839,
+      "mean_rounds": 108.204,
+      "bankruptcy_rate": 0.835,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "greedy",
+      "games": 1000,
+      "wins": 508,
+      "losses": 492,
+      "draws": 0,
+      "win_rate": 0.508,
+      "ci_low": 0.4770423632544587,
+      "ci_high": 0.5388964063681592,
+      "mean_rounds": 110.087,
+      "bankruptcy_rate": 0.802,
+      "invalid_action_rate": 0.0
+    }
+  ]
+}

@@ -9,7 +9,7 @@
 | Planning docs (PRD, spec, phases, memory) | Day 0 | ✅ |
 | M0 Kick-off (repo, tooling, open questions) | Day 1 | 🟨 repo + tooling done; open questions pending |
 | M1 Engine done | Day 3 | ✅ |
-| M2 First trained agents | Day 5 | 🟨 pipeline works; full experiment run in progress |
+| M2 First trained agents | Day 5 | ✅ 27 models (9 configs × 3 seeds) |
 | **M3 MVP: AI vs Bot in the UI** | **Day 7** | ⬜ |
 | M4 Feature complete | Day 10 | ⬜ |
 | M5 README + slides + rehearsal | Day 12 | ⬜ |
@@ -32,7 +32,7 @@
 - ✅ real API (mock skipped) · ✅ real sessions · ✅ X-Ray payload · ✅ board · ✅ animations · ✅ Watch mode · ✅ X-Ray panel (built; visual check in a browser still pending)
 
 ### Phase 4: Experiments
-- ⬜ E1 · ⬜ E2 · ⬜ E3 · ⬜ E4 · ⬜ E5 (stretch) · ⬜ plots + summary JSON · ⬜ behaviour analysis
+- ✅ E1 · ✅ E2 · ✅ E3 · ✅ E4 · ✅ E5 · 🟨 E6 (long run, added) · ✅ plots + summary JSON · ✅ behaviour analysis
 
 ### Phase 5: Features & polish
 - ✅ Human vs AI · ✅ Results page · ✅ How it works · ⬜ a11y/responsive · ⬜ smoke test · ⬜ dev script
@@ -41,6 +41,17 @@
 - ⬜ README · ⬜ web slide deck · ⬜ demo GIF · ⬜ rehearsals · ⬜ release v1.0
 
 ## Session log
+### 2026-10-30: Results of E1–E5 (from results/summary/summary.json)
+Win rate vs Random / Fixed / Greedy, pooled over 3 seeds × 1,000 games:
+- E1: DQN-A 25.3 / 15.8 / 19.3 % · PPO-A 19.1 / 10.0 / 13.5 % (invalid actions 60–69%).
+- E2: DQN-B (no mask) 38.8 / 25.0 / 26.5 % · **PPO-B (no mask) 0 / 0 / 0 % (90% invalid actions → it never buys)** · **MaskablePPO-B 71.5 / 47.2 / 49.7 % (best)**.
+- E3: absolute-share reward 49.0 / 23.2 / 25.8 % (longer games: 139 vs 109 rounds) · sparse 70.9 / 46.4 / 48.2 %.
+- E4: no property bonus 70.3 / 46.9 / 49.5 % (no effect at 300k steps).
+- E5: trained vs mixed bots 70.6 / 46.6 / 48.9 %.
+- Baselines: Fixed vs Random 74.1%, Greedy vs Random 72.7%, Greedy vs Fixed 46.7%, Random vs Random 49.0%.
+- Behaviour (best = e2_maskppo_b_s1): buys 84–96% of offers in every group, so it is near-greedy. That explains why it matches Greedy's 46.7% vs Fixed.
+- **Story for the slides:** env design + masking is the dominant factor; the blueprint's absolute reward hurts as predicted; no agent beats Fixed yet → E6 tests longer training.
+
 ### 2026-10-30: Build session 2 (with Claude)
 - Frontend built: `frontend/src/{pages,components,lib,types}`; `npm run build` passes (tsc strict).
 - Gotcha: framer-motion 12.x broke with the newer motion-dom; fixed by using framer-motion 14.8.

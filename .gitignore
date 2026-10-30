@@ -10,7 +10,6 @@ htmlcov/
 *.egg-info/
 
 # RL artifacts (large / regenerated)
-models/*.zip
 results/raw/
 runs/
 tb_logs/

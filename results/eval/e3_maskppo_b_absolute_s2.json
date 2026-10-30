@@ -1,0 +1,90 @@
+{
+  "run_id": "e3_maskppo_b_absolute_s2",
+  "meta": {
+    "run_id": "e3_maskppo_b_absolute_s2",
+    "algo": "maskppo",
+    "env": "B",
+    "seed": 2,
+    "steps": 300000,
+    "train_seconds": 196.2,
+    "trained_at": "2026-10-30T10:03:06+00:00",
+    "config": {
+      "name": "e3_maskppo_b_absolute",
+      "algo": "maskppo",
+      "env": "B",
+      "opponent": "fixed",
+      "use_masking": true,
+      "reward": {
+        "mode": "absolute_share",
+        "terminal": 10.0
+      },
+      "steps": 300000,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n_envs": 8,
+      "net_arch": [
+        128,
+        128
+      ],
+      "algo_kwargs": {},
+      "eval_every": 20000,
+      "eval_games": 100,
+      "eval_opponents": [
+        "fixed",
+        "random"
+      ],
+      "final_games": 1000
+    },
+    "algo_kwargs": {
+      "learning_rate": 0.0003,
+      "n_steps": 1024,
+      "batch_size": 256,
+      "gamma": 0.99,
+      "ent_coef": 0.01
+    }
+  },
+  "results": [
+    {
+      "opponent": "random",
+      "games": 1000,
+      "wins": 494,
+      "losses": 506,
+      "draws": 0,
+      "win_rate": 0.494,
+      "ci_low": 0.4630942141573671,
+      "ci_high": 0.5249517086256698,
+      "mean_rounds": 159.752,
+      "bankruptcy_rate": 0.418,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "fixed",
+      "games": 1000,
+      "wins": 237,
+      "losses": 763,
+      "draws": 0,
+      "win_rate": 0.237,
+      "ci_low": 0.21168091851549473,
+      "ci_high": 0.26433203014094675,
+      "mean_rounds": 140.433,
+      "bankruptcy_rate": 0.594,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "greedy",
+      "games": 1000,
+      "wins": 257,
+      "losses": 743,
+      "draws": 0,
+      "win_rate": 0.257,
+      "ci_low": 0.23088155574698166,
+      "ci_high": 0.2849783169660042,
+      "mean_rounds": 143.185,
+      "bankruptcy_rate": 0.564,
+      "invalid_action_rate": 0.0
+    }
+  ]
+}

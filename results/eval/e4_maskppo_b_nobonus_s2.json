@@ -1,0 +1,92 @@
+{
+  "run_id": "e4_maskppo_b_nobonus_s2",
+  "meta": {
+    "run_id": "e4_maskppo_b_nobonus_s2",
+    "algo": "maskppo",
+    "env": "B",
+    "seed": 2,
+    "steps": 300000,
+    "train_seconds": 149.1,
+    "trained_at": "2026-10-30T10:10:18+00:00",
+    "config": {
+      "name": "e4_maskppo_b_nobonus",
+      "algo": "maskppo",
+      "env": "B",
+      "opponent": "fixed",
+      "use_masking": true,
+      "reward": {
+        "mode": "delta_share",
+        "terminal": 10.0,
+        "b_single": 1.0,
+        "b_monopoly": 1.0
+      },
+      "steps": 300000,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n_envs": 8,
+      "net_arch": [
+        128,
+        128
+      ],
+      "algo_kwargs": {},
+      "eval_every": 20000,
+      "eval_games": 100,
+      "eval_opponents": [
+        "fixed",
+        "random"
+      ],
+      "final_games": 1000
+    },
+    "algo_kwargs": {
+      "learning_rate": 0.0003,
+      "n_steps": 1024,
+      "batch_size": 256,
+      "gamma": 0.99,
+      "ent_coef": 0.01
+    }
+  },
+  "results": [
+    {
+      "opponent": "random",
+      "games": 1000,
+      "wins": 697,
+      "losses": 303,
+      "draws": 0,
+      "win_rate": 0.697,
+      "ci_low": 0.6678071329400123,
+      "ci_high": 0.7246850690169498,
+      "mean_rounds": 106.146,
+      "bankruptcy_rate": 0.875,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "fixed",
+      "games": 1000,
+      "wins": 467,
+      "losses": 533,
+      "draws": 0,
+      "win_rate": 0.467,
+      "ci_low": 0.4362625046284455,
+      "ci_high": 0.4979900706782564,
+      "mean_rounds": 109.884,
+      "bankruptcy_rate": 0.829,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "greedy",
+      "games": 1000,
+      "wins": 493,
+      "losses": 507,
+      "draws": 0,
+      "win_rate": 0.493,
+      "ci_low": 0.4620988422512973,
+      "ci_high": 0.5239547343289122,
+      "mean_rounds": 111.972,
+      "bankruptcy_rate": 0.796,
+      "invalid_action_rate": 0.0
+    }
+  ]
+}

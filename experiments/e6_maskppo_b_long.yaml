@@ -1,0 +1,8 @@
+# E6: can longer training + more exploration escape the "buy everything" plateau?
+name: e6_maskppo_b_long
+algo: maskppo
+env: B
+steps: 1000000
+net_arch: [256, 256]
+algo_kwargs: {ent_coef: 0.03, n_steps: 2048, batch_size: 512, learning_rate: 0.0002}
+eval_every: 50000

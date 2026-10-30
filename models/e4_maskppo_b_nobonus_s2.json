@@ -1,0 +1,48 @@
+{
+  "run_id": "e4_maskppo_b_nobonus_s2",
+  "algo": "maskppo",
+  "env": "B",
+  "seed": 2,
+  "steps": 300000,
+  "train_seconds": 149.1,
+  "trained_at": "2026-10-30T10:10:18+00:00",
+  "config": {
+    "name": "e4_maskppo_b_nobonus",
+    "algo": "maskppo",
+    "env": "B",
+    "opponent": "fixed",
+    "use_masking": true,
+    "reward": {
+      "mode": "delta_share",
+      "terminal": 10.0,
+      "b_single": 1.0,
+      "b_monopoly": 1.0
+    },
+    "steps": 300000,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "n_envs": 8,
+    "net_arch": [
+      128,
+      128
+    ],
+    "algo_kwargs": {},
+    "eval_every": 20000,
+    "eval_games": 100,
+    "eval_opponents": [
+      "fixed",
+      "random"
+    ],
+    "final_games": 1000
+  },
+  "algo_kwargs": {
+    "learning_rate": 0.0003,
+    "n_steps": 1024,
+    "batch_size": 256,
+    "gamma": 0.99,
+    "ent_coef": 0.01
+  }
+}

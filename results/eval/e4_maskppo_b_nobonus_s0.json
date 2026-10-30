@@ -1,0 +1,92 @@
+{
+  "run_id": "e4_maskppo_b_nobonus_s0",
+  "meta": {
+    "run_id": "e4_maskppo_b_nobonus_s0",
+    "algo": "maskppo",
+    "env": "B",
+    "seed": 0,
+    "steps": 300000,
+    "train_seconds": 146.6,
+    "trained_at": "2026-10-30T10:09:35+00:00",
+    "config": {
+      "name": "e4_maskppo_b_nobonus",
+      "algo": "maskppo",
+      "env": "B",
+      "opponent": "fixed",
+      "use_masking": true,
+      "reward": {
+        "mode": "delta_share",
+        "terminal": 10.0,
+        "b_single": 1.0,
+        "b_monopoly": 1.0
+      },
+      "steps": 300000,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n_envs": 8,
+      "net_arch": [
+        128,
+        128
+      ],
+      "algo_kwargs": {},
+      "eval_every": 20000,
+      "eval_games": 100,
+      "eval_opponents": [
+        "fixed",
+        "random"
+      ],
+      "final_games": 1000
+    },
+    "algo_kwargs": {
+      "learning_rate": 0.0003,
+      "n_steps": 1024,
+      "batch_size": 256,
+      "gamma": 0.99,
+      "ent_coef": 0.01
+    }
+  },
+  "results": [
+    {
+      "opponent": "random",
+      "games": 1000,
+      "wins": 694,
+      "losses": 306,
+      "draws": 0,
+      "win_rate": 0.694,
+      "ci_low": 0.6647401014845274,
+      "ci_high": 0.721775061863953,
+      "mean_rounds": 105.029,
+      "bankruptcy_rate": 0.884,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "fixed",
+      "games": 1000,
+      "wins": 460,
+      "losses": 540,
+      "draws": 0,
+      "win_rate": 0.46,
+      "ci_low": 0.4293208680902404,
+      "ci_high": 0.49098528379667095,
+      "mean_rounds": 109.636,
+      "bankruptcy_rate": 0.83,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "greedy",
+      "games": 1000,
+      "wins": 485,
+      "losses": 515,
+      "draws": 0,
+      "win_rate": 0.485,
+      "ci_low": 0.45414030643565373,
+      "ci_high": 0.515974500521938,
+      "mean_rounds": 111.267,
+      "bankruptcy_rate": 0.803,
+      "invalid_action_rate": 0.0
+    }
+  ]
+}

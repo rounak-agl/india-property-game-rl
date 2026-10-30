@@ -63,3 +63,9 @@ This fulfils D-010. The jail decision for the agent uses the shared `jail_policy
 
 ### D-017 · 2026-10-30 · Accepted · Repo and commits
 Private repo `github.com/rounak-agl/india-property-game-rl`. All commits under the user's identity with **no AI co-author lines**. Work is on branch `feat/engine-core` (main has only the docs commit so far).
+
+### D-018 · 2026-10-30 · Accepted · Commit trained models to git
+All 300k-step models together are ~20 MB, so `models/*.zip` is committed. Teammates can then run the demo without training.
+
+### D-019 · 2026-10-30 · Accepted · Add E6 (longer training) after the first results
+MaskablePPO plateaued at ~47% vs Fixed with a near-greedy buying policy. E6 tests 1M steps, a [256, 256] net, ent_coef 0.03, n_steps 2048 and batch 512 (3 seeds).

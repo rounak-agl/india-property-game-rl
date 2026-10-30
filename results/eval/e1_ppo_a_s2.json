@@ -1,0 +1,90 @@
+{
+  "run_id": "e1_ppo_a_s2",
+  "meta": {
+    "run_id": "e1_ppo_a_s2",
+    "algo": "ppo",
+    "env": "A",
+    "seed": 2,
+    "steps": 300000,
+    "train_seconds": 146.0,
+    "trained_at": "2026-10-30T09:48:41+00:00",
+    "config": {
+      "name": "e1_ppo_a",
+      "algo": "ppo",
+      "env": "A",
+      "opponent": "fixed",
+      "use_masking": false,
+      "reward": {
+        "mode": "delta_share",
+        "terminal": 10.0
+      },
+      "steps": 300000,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n_envs": 8,
+      "net_arch": [
+        128,
+        128
+      ],
+      "algo_kwargs": {},
+      "eval_every": 20000,
+      "eval_games": 100,
+      "eval_opponents": [
+        "fixed",
+        "random"
+      ],
+      "final_games": 1000
+    },
+    "algo_kwargs": {
+      "learning_rate": 0.0003,
+      "n_steps": 1024,
+      "batch_size": 256,
+      "gamma": 0.99,
+      "ent_coef": 0.01
+    }
+  },
+  "results": [
+    {
+      "opponent": "random",
+      "games": 1000,
+      "wins": 273,
+      "losses": 727,
+      "draws": 0,
+      "win_rate": 0.273,
+      "ci_low": 0.24629547549340855,
+      "ci_high": 0.30144193646481293,
+      "mean_rounds": 129.506,
+      "bankruptcy_rate": 0.738,
+      "invalid_action_rate": 0.8266729879040489
+    },
+    {
+      "opponent": "fixed",
+      "games": 1000,
+      "wins": 137,
+      "losses": 863,
+      "draws": 0,
+      "win_rate": 0.137,
+      "ci_low": 0.11707278963803953,
+      "ci_high": 0.15970553873568002,
+      "mean_rounds": 112.894,
+      "bankruptcy_rate": 0.821,
+      "invalid_action_rate": 0.8122863280186368
+    },
+    {
+      "opponent": "greedy",
+      "games": 1000,
+      "wins": 176,
+      "losses": 824,
+      "draws": 0,
+      "win_rate": 0.176,
+      "ci_low": 0.15364903702878677,
+      "ci_high": 0.2008307932551943,
+      "mean_rounds": 113.723,
+      "bankruptcy_rate": 0.8,
+      "invalid_action_rate": 0.8057688410528923
+    }
+  ]
+}

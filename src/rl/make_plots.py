@@ -40,6 +40,7 @@ LABELS = {
     "e3_maskppo_b_sparse": "MaskablePPO · sparse reward",
     "e4_maskppo_b_nobonus": "MaskablePPO · no property bonus",
     "e5_maskppo_b_mixed": "MaskablePPO · trained vs mixed",
+    "e6_maskppo_b_long": "MaskablePPO · 1M steps, larger net",
 }
 EXPERIMENTS = {
     "E1 Algorithm (blueprint env)": ["e1_dqn_a", "e1_ppo_a"],
@@ -47,6 +48,7 @@ EXPERIMENTS = {
     "E3 Reward design": ["e2_maskppo_b", "e3_maskppo_b_absolute", "e3_maskppo_b_sparse"],
     "E4 Property bonus": ["e2_maskppo_b", "e4_maskppo_b_nobonus"],
     "E5 Training opponent": ["e2_maskppo_b", "e5_maskppo_b_mixed"],
+    "E6 Longer training": ["e2_maskppo_b", "e6_maskppo_b_long"],
 }
 OPPONENTS = ("random", "fixed", "greedy")
 
@@ -89,7 +91,7 @@ def learning_curves() -> dict[str, dict]:
     curves = {}
     for name, dfs in frames.items():
         df = pd.concat(dfs)
-        df["bucket"] = (df["timesteps"] / 20_000).round().astype(int) * 20_000
+        df["bucket"] = (df["timesteps"] / 50_000).round().astype(int) * 50_000
         curves[name] = {}
         for opp, g in df.groupby("opponent"):
             agg = g.groupby("bucket")["win_rate"].agg(["mean", "std"]).fillna(0).reset_index()
@@ -158,7 +160,7 @@ def plot(final: dict, curves: dict, baselines: list[dict]) -> list[str]:
         rates = np.array([final[n]["vs"][opp]["win_rate"] for n in names])
         err = np.array([[final[n]["vs"][opp]["win_rate"] - final[n]["vs"][opp]["ci_low"],
                          final[n]["vs"][opp]["ci_high"] - final[n]["vs"][opp]["win_rate"]] for n in names]).T
-        ax.bar(x + (k - 1) * width, rates, width, yerr=err, capsize=2, label=f"vs {opp}")
+        ax.bar(x + (k - 1) * width, rates, width, yerr=np.clip(err, 0, None), capsize=2, label=f"vs {opp}")
     for b in baselines:
         if b["agent"] == "fixed" and b["opponent"] == "random":
             ax.axhline(b["win_rate"], ls=":", c="black", lw=1, label="Fixed bot vs Random (baseline)")

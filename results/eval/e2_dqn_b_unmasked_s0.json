@@ -1,0 +1,94 @@
+{
+  "run_id": "e2_dqn_b_unmasked_s0",
+  "meta": {
+    "run_id": "e2_dqn_b_unmasked_s0",
+    "algo": "dqn",
+    "env": "B",
+    "seed": 0,
+    "steps": 300000,
+    "train_seconds": 197.7,
+    "trained_at": "2026-10-30T09:52:59+00:00",
+    "config": {
+      "name": "e2_dqn_b_unmasked",
+      "algo": "dqn",
+      "env": "B",
+      "opponent": "fixed",
+      "use_masking": false,
+      "reward": {
+        "mode": "delta_share",
+        "terminal": 10.0
+      },
+      "steps": 300000,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n_envs": 8,
+      "net_arch": [
+        128,
+        128
+      ],
+      "algo_kwargs": {},
+      "eval_every": 20000,
+      "eval_games": 100,
+      "eval_opponents": [
+        "fixed",
+        "random"
+      ],
+      "final_games": 1000
+    },
+    "algo_kwargs": {
+      "learning_rate": 0.0001,
+      "buffer_size": 100000,
+      "learning_starts": 5000,
+      "batch_size": 128,
+      "gamma": 0.99,
+      "train_freq": 4,
+      "target_update_interval": 2000,
+      "exploration_fraction": 0.3,
+      "exploration_final_eps": 0.05
+    }
+  },
+  "results": [
+    {
+      "opponent": "random",
+      "games": 1000,
+      "wins": 312,
+      "losses": 688,
+      "draws": 0,
+      "win_rate": 0.312,
+      "ci_low": 0.2840491872940642,
+      "ci_high": 0.34138972657441874,
+      "mean_rounds": 95.274,
+      "bankruptcy_rate": 0.983,
+      "invalid_action_rate": 0.7855043304673133
+    },
+    {
+      "opponent": "fixed",
+      "games": 1000,
+      "wins": 226,
+      "losses": 774,
+      "draws": 0,
+      "win_rate": 0.226,
+      "ci_low": 0.20115424829035228,
+      "ci_high": 0.25294289213498977,
+      "mean_rounds": 81.915,
+      "bankruptcy_rate": 0.997,
+      "invalid_action_rate": 0.7577324655406336
+    },
+    {
+      "opponent": "greedy",
+      "games": 1000,
+      "wins": 239,
+      "losses": 761,
+      "draws": 0,
+      "win_rate": 0.239,
+      "ci_low": 0.21359749233628916,
+      "ci_high": 0.2664001487258067,
+      "mean_rounds": 82.164,
+      "bankruptcy_rate": 0.988,
+      "invalid_action_rate": 0.7752266801572167
+    }
+  ]
+}
