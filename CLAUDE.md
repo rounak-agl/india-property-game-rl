@@ -28,8 +28,9 @@ Original Indian-themed 2-player property-trading game following Monopoly rules +
 | Install (Python) | `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt` |
 | Tests | `pytest -q` |
 | Lint | `ruff check src tests` |
-| Train | `python -m src.rl.train --config experiments/<name>.yaml` |
-| Evaluate | `python -m src.rl.evaluate --model models/<id>.zip --games 1000` |
+| Train | `python -m src.rl.train --config experiments/<name>.yaml [--seeds 0] [--steps N]` |
+| All experiments | `scripts/run_experiments.sh 3` (≤3 parallel jobs to avoid running out of memory) |
+| Evaluate | `python -m src.rl.evaluate --model models/<run_id> --games 1000` |
 | Plots | `python -m src.rl.make_plots` |
 | API | `uvicorn src.api.main:app --reload --port 8000` |
 | Frontend | `cd frontend && npm install && npm run dev` |

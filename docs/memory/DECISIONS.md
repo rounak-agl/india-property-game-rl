@@ -41,3 +41,25 @@ From the blueprint. A round = both players take a turn. Ending at round 200 is a
 
 ### D-011 · 2026-10-30 · Proposed · Jail decisions handled by a fixed rule for all players
 **Why:** Rare decision, which matches the hybrid idea in Bonjour/Haliem et al. (DRL for frequent decisions, rules for infrequent ones). Rule: pay ₹50 if cash > ₹500 and round < 100, otherwise try for doubles.
+
+### D-012 · 2026-10-30 · Accepted (implemented) · Equal net worth at round 200 is a draw
+`winner = None`, terminal reward 0. This replaces the "ties → player 2" wording in TECH_SPEC §3.2.
+
+### D-013 · 2026-10-30 · Accepted (implemented) · Engine is a generator-driven state machine
+`Game.advance()` runs until a `Decision` is needed; `Game.act(a)` answers it. Bots, RL envs, the API and humans all drive the same engine. Decision kinds: `buy`, `build`, `jail`, `turn` (Env A only), `next_turn` (UI pacing only).
+
+### D-014 · 2026-10-30 · Accepted (implemented) · Env A implemented as an engine "blueprint mode"
+`Game(blueprint_players={0})` skips the separate buy/build decisions and asks one Pass/Buy/Build `turn` decision after every move. Build goes on the owned monopoly with the fewest houses. Buy/Build actions that have no effect are counted as invalid in `info["invalid_actions"]`.
+
+### D-015 · 2026-10-30 · Accepted (implemented) · Agent always in seat 0; first mover randomised
+This fulfils D-010. The jail decision for the agent uses the shared `jail_policy` (D-011).
+
+### D-016 · 2026-10-30 · Accepted (implemented) · Training defaults
+- 300k steps; 3 seeds (0, 1, 2); MLP [128, 128]; CPU.
+- PPO/MaskablePPO: 8 envs, n_steps 1024, batch 256, lr 3e-4, ent_coef 0.01.
+- DQN: 1 env, buffer 100k, lr 1e-4, learning_starts 5k, exploration_fraction 0.3.
+- Periodic eval: every 20k steps, 100 games vs Fixed and vs Random.
+- Final eval: 1,000 games vs Random, Fixed and Greedy (seed 10,000+).
+
+### D-017 · 2026-10-30 · Accepted · Repo and commits
+Private repo `github.com/rounak-agl/india-property-game-rl`. All commits under the user's identity with **no AI co-author lines**. Work is on branch `feat/engine-core` (main has only the docs commit so far).
