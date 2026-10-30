@@ -38,3 +38,36 @@ def test_soak_invariants(pair):
             errors = g.check_invariants()
             assert not errors, (seed, errors)
         assert g.state.finished
+
+
+def test_blueprint_mode_asks_every_move_and_treats_invalid_as_pass():
+    from src.bots import FixedPolicyBot
+
+    class AlwaysBuild:
+        def decide(self, game, decision):
+            return 2 if decision.kind == "turn" else 0
+
+    g = Game(seed=3, blueprint_players={0})
+    g.play([AlwaysBuild(), FixedPolicyBot()])
+    turn_decisions = sum(1 for e in g.events if e.type == "moved" and e.player == 0)
+    assert turn_decisions > 0
+    assert not any(e.type == "bought" and e.player == 0 for e in g.events)
+    assert not g.check_invariants()
+
+
+def test_blueprint_mode_soak():
+    from src.bots import RandomBot
+
+    class RandomTurn:
+        def __init__(self, seed):
+            import random
+
+            self.rng = random.Random(seed)
+
+        def decide(self, game, decision):
+            return self.rng.choice(decision.legal)
+
+    for seed in range(300):
+        g = Game(seed=seed, blueprint_players={0})
+        g.play([RandomTurn(seed), RandomBot(seed)])
+        assert g.state.finished and not g.check_invariants()

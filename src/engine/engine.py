@@ -8,12 +8,13 @@ it. RL environments, bots, the API and humans all drive the same engine this way
 from __future__ import annotations
 
 import random
-from collections.abc import Generator, Sequence
+from collections.abc import Collection, Generator, Sequence
 from dataclasses import asdict, dataclass, field
 from typing import Protocol
 
 from .board_data import (
     GO_SALARY,
+    GROUP_MEMBERS,
     JAIL_FINE,
     JAIL_INDEX,
     MAX_HOUSES,
@@ -77,13 +78,17 @@ class Game:
         names: Sequence[str] = ("Player 1", "Player 2"),
         first_player: int | None = None,
         max_rounds: int = DEFAULT_MAX_ROUNDS,
+        blueprint_players: Collection[int] = (),
     ):
+        """`blueprint_players` get one Pass/Buy/Build "turn" decision after every move
+        instead of separate buy and build decisions (Env A, faithful to the blueprint)."""
         self.rng = random.Random(seed)
         if first_player is None:
             first_player = self.rng.randrange(2)
         players = [PlayerState(i, names[i]) for i in range(2)]
         self.state = GameState(players=players, first_player=first_player, current=first_player)
         self.max_rounds = max_rounds
+        self.blueprint_players = frozenset(blueprint_players)
         self.decks = {"chance": Deck(CHANCE_CARDS, self.rng), "chest": Deck(CHEST_CARDS, self.rng)}
         self.jail_card_sources: dict[int, list[str]] = {0: [], 1: []}
         self.events: list[Event] = []
@@ -152,12 +157,16 @@ class Game:
         self._emit("turn_start", p)
         if pl.in_jail:
             result = yield from self._jail_phase(p)
-            if result is None or s.finished:
+            if s.finished:
+                return
+            if result is None:
+                yield from self._blueprint_turn(p)
                 return
             if result != "free":
                 total = sum(result)
                 self._move_by(p, total)
                 yield from self._resolve_landing(p, total)
+                yield from self._blueprint_turn(p)
                 return
         doubles = 0
         while True:
@@ -169,11 +178,33 @@ class Game:
                 doubles += 1
                 if doubles == 3:
                     self._send_to_jail(p, "three_doubles")
+                    yield from self._blueprint_turn(p)
                     return
             self._move_by(p, d1 + d2)
             yield from self._resolve_landing(p, d1 + d2)
+            yield from self._blueprint_turn(p)
             if s.finished or pl.in_jail or d1 != d2:
                 return
+
+    def _blueprint_turn(self, p: int) -> Flow:
+        """Env A: one Pass(0) / Buy(1) / Build(2) choice per move; invalid choices act as Pass."""
+        s = self.state
+        if p not in self.blueprint_players or s.finished:
+            return
+        idx = s.players[p].position
+        action = yield Decision("turn", p, [0, 1, 2], tile=idx)
+        if action == 1 and can_buy(s, p, idx):
+            self._buy(p, idx)
+            return
+        if action == 2:
+            groups = buildable_groups(s, p)
+            if groups:
+                # The owned monopoly with the fewest houses; ties -> more expensive group.
+                g = min(groups, key=lambda g: (sum(s.tiles[i].houses for i in GROUP_MEMBERS[g]), -g))
+                self._build(p, g)
+                return
+        if TILES[idx].buyable and s.tiles[idx].owner is None:
+            self._emit("declined", p, tile=idx, reason="choice")
 
     def _jail_phase(self, p: int) -> Generator[Decision, int, tuple[int, int] | str | None]:
         s, pl = self.state, self.state.players[p]
@@ -211,6 +242,8 @@ class Game:
 
     def _build_phase(self, p: int) -> Flow:
         s = self.state
+        if p in self.blueprint_players:
+            return
         while not s.finished:
             groups = buildable_groups(s, p)
             if not groups:
@@ -226,7 +259,9 @@ class Game:
         tile, ts = TILES[idx], s.tiles[idx]
         if tile.buyable:
             if ts.owner is None:
-                if can_buy(s, p, idx):
+                if p in self.blueprint_players:
+                    pass  # decided in _blueprint_turn
+                elif can_buy(s, p, idx):
                     action = yield Decision("buy", p, [PASS, BUY], tile=idx)
                     if action == BUY:
                         self._buy(p, idx)
