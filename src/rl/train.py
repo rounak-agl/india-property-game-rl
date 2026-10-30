@@ -78,7 +78,7 @@ class PeriodicEval(BaseCallback):
                     print(f"  [{self.num_timesteps:>7}] vs {opp}: {r['win_rate']:.1%}")
 
 
-def train_one(cfg: TrainConfig, seed: int, verbose: int = 1) -> dict:
+def train_one(cfg: TrainConfig, seed: int, verbose: int = 1, device: str = "auto") -> dict:
     run_id = cfg.run_id(seed)
     raw = RAW_DIR / run_id
     raw.mkdir(parents=True, exist_ok=True)
@@ -90,7 +90,7 @@ def train_one(cfg: TrainConfig, seed: int, verbose: int = 1) -> dict:
     vec_env = make_vec_env(lambda: Monitor(make_env(cfg.env, **cfg.env_kwargs())), n_envs=n_envs, seed=seed)
     algo_kwargs = {**DEFAULT_ALGO_KWARGS[cfg.algo], **cfg.algo_kwargs}
     model = ALGO_CLASSES[cfg.algo](
-        "MlpPolicy", vec_env, seed=seed, verbose=0, device="cpu",
+        "MlpPolicy", vec_env, seed=seed, verbose=0, device=device,
         policy_kwargs={"net_arch": cfg.net_arch}, **algo_kwargs,
     )
     callback = PeriodicEval(cfg, raw / "eval.csv")
@@ -106,6 +106,7 @@ def train_one(cfg: TrainConfig, seed: int, verbose: int = 1) -> dict:
         "seed": seed,
         "steps": cfg.steps,
         "train_seconds": round(seconds, 1),
+        "device": str(model.device),
         "trained_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "config": cfg.to_dict(),
         "algo_kwargs": algo_kwargs,
@@ -129,6 +130,7 @@ def main() -> None:
     parser.add_argument("--config", required=True)
     parser.add_argument("--seeds", type=int, nargs="+")
     parser.add_argument("--steps", type=int)
+    parser.add_argument("--device", default="auto", help="auto (GPU if available) | cuda | cpu")
     parser.add_argument("--threads", type=int, default=1, help="torch CPU threads (keep 1 to run configs in parallel)")
     args = parser.parse_args()
 
@@ -137,7 +139,7 @@ def main() -> None:
     if args.steps:
         cfg.steps = args.steps
     for seed in args.seeds if args.seeds is not None else cfg.seeds:
-        train_one(cfg, seed)
+        train_one(cfg, seed, device=args.device)
 
 
 if __name__ == "__main__":

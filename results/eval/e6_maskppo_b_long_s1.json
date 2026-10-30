@@ -1,0 +1,95 @@
+{
+  "run_id": "e6_maskppo_b_long_s1",
+  "meta": {
+    "run_id": "e6_maskppo_b_long_s1",
+    "algo": "maskppo",
+    "env": "B",
+    "seed": 1,
+    "steps": 1000000,
+    "train_seconds": 485.8,
+    "trained_at": "2026-10-30T10:23:09+00:00",
+    "config": {
+      "name": "e6_maskppo_b_long",
+      "algo": "maskppo",
+      "env": "B",
+      "opponent": "fixed",
+      "use_masking": true,
+      "reward": {
+        "mode": "delta_share",
+        "terminal": 10.0
+      },
+      "steps": 1000000,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n_envs": 8,
+      "net_arch": [
+        256,
+        256
+      ],
+      "algo_kwargs": {
+        "ent_coef": 0.03,
+        "n_steps": 2048,
+        "batch_size": 512,
+        "learning_rate": 0.0002
+      },
+      "eval_every": 50000,
+      "eval_games": 100,
+      "eval_opponents": [
+        "fixed",
+        "random"
+      ],
+      "final_games": 1000
+    },
+    "algo_kwargs": {
+      "learning_rate": 0.0002,
+      "n_steps": 2048,
+      "batch_size": 512,
+      "gamma": 0.99,
+      "ent_coef": 0.03
+    }
+  },
+  "results": [
+    {
+      "opponent": "random",
+      "games": 1000,
+      "wins": 731,
+      "losses": 269,
+      "draws": 0,
+      "win_rate": 0.731,
+      "ci_low": 0.7026696935780132,
+      "ci_high": 0.7575622792750745,
+      "mean_rounds": 106.231,
+      "bankruptcy_rate": 0.865,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "fixed",
+      "games": 1000,
+      "wins": 459,
+      "losses": 541,
+      "draws": 0,
+      "win_rate": 0.459,
+      "ci_low": 0.42832970302474194,
+      "ci_high": 0.4899841026593422,
+      "mean_rounds": 108.11,
+      "bankruptcy_rate": 0.835,
+      "invalid_action_rate": 0.0
+    },
+    {
+      "opponent": "greedy",
+      "games": 1000,
+      "wins": 486,
+      "losses": 514,
+      "draws": 0,
+      "win_rate": 0.486,
+      "ci_low": 0.4551346916565153,
+      "ci_high": 0.5169724615039037,
+      "mean_rounds": 111.06,
+      "bankruptcy_rate": 0.815,
+      "invalid_action_rate": 0.0
+    }
+  ]
+}

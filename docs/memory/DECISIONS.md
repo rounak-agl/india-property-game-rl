@@ -69,3 +69,9 @@ All 300k-step models together are ~20 MB, so `models/*.zip` is committed. Teamma
 
 ### D-019 · 2026-10-30 · Accepted · Add E6 (longer training) after the first results
 MaskablePPO plateaued at ~47% vs Fixed with a near-greedy buying policy. E6 tests 1M steps, a [256, 256] net, ent_coef 0.03, n_steps 2048 and batch 512 (3 seeds).
+
+### D-020 · 2026-10-30 · Accepted · Train on the GPU by default (`--device auto`)
+The user asked for GPU training. The venv now has torch 2.11.0+cu128 (RTX 4050, driver 580, CUDA 13.0).
+- Benchmark, 100k MaskablePPO steps on Env B: [256,256] CPU 2,842 vs GPU 2,563 steps/s (no gain, because the game simulation on the CPU is the bottleneck); [1024,1024] CPU 1,181 vs GPU 2,473 steps/s (2.1×).
+- The GPU helps only for larger networks. Use `--device cpu` to run several small jobs in parallel.
+- E1–E6 models were trained on the CPU.

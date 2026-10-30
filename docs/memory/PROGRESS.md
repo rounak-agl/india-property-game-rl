@@ -32,7 +32,7 @@
 - ✅ real API (mock skipped) · ✅ real sessions · ✅ X-Ray payload · ✅ board · ✅ animations · ✅ Watch mode · ✅ X-Ray panel (built; visual check in a browser still pending)
 
 ### Phase 4: Experiments
-- ✅ E1 · ✅ E2 · ✅ E3 · ✅ E4 · ✅ E5 · 🟨 E6 (long run, added) · ✅ plots + summary JSON · ✅ behaviour analysis
+- ✅ E1 · ✅ E2 · ✅ E3 · ✅ E4 · ✅ E5 · ✅ E6 (long run, added) · ✅ plots + summary JSON · ✅ behaviour analysis
 
 ### Phase 5: Features & polish
 - ✅ Human vs AI · ✅ Results page · ✅ How it works · ⬜ a11y/responsive · ⬜ smoke test · ⬜ dev script
@@ -41,6 +41,11 @@
 - ⬜ README · ⬜ web slide deck · ⬜ demo GIF · ⬜ rehearsals · ⬜ release v1.0
 
 ## Session log
+### 2026-10-30: E6 + GPU
+- E6 (1M steps, [256,256], ent 0.03): 71.7 / 46.6 / 49.7 % (per seed vs Fixed 47.7 / 45.9 / 46.1 %), 8.1 min per seed on the CPU. **No improvement:** the plateau at ≈ Greedy's level (46.7% vs Fixed) is robust.
+- Installed CUDA torch; `train.py --device auto|cuda|cpu` (D-020). The GPU only speeds up large networks.
+- **Next up:** README + web slide deck from summary.json; browser check of the UI.
+
 ### 2026-10-30: Results of E1–E5 (from results/summary/summary.json)
 Win rate vs Random / Fixed / Greedy, pooled over 3 seeds × 1,000 games:
 - E1: DQN-A 25.3 / 15.8 / 19.3 % · PPO-A 19.1 / 10.0 / 13.5 % (invalid actions 60–69%).
