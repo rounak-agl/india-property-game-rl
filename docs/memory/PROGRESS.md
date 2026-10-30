@@ -18,7 +18,7 @@
 ### Phase 0: Setup
 - ✅ Git repo + GitHub remote (private, rounak-agl/india-property-game-rl)
 - ✅ Python venv, requirements, pytest/ruff (pyproject.toml)
-- ⬜ Vite React-TS scaffold
+- ✅ Vite React-TS scaffold (`frontend/`, React 19, framer-motion 14, recharts 2.15, react-router 7)
 - ⬜ Open questions Q1–Q6 resolved
 - ✅ `board_data.py`
 
@@ -29,18 +29,27 @@
 - ✅ Env A · ✅ Env B + masks · ✅ rewards · ✅ check_env · ✅ train.py · ✅ evaluate.py · 🟨 first models (training)
 
 ### Phase 3: API + board UI
-- ✅ real API (mock skipped) · ✅ real sessions · ✅ X-Ray payload · ⬜ board · ⬜ animations · ⬜ Watch mode · ⬜ X-Ray panel
+- ✅ real API (mock skipped) · ✅ real sessions · ✅ X-Ray payload · ✅ board · ✅ animations · ✅ Watch mode · ✅ X-Ray panel (built; visual check in a browser still pending)
 
 ### Phase 4: Experiments
 - ⬜ E1 · ⬜ E2 · ⬜ E3 · ⬜ E4 · ⬜ E5 (stretch) · ⬜ plots + summary JSON · ⬜ behaviour analysis
 
 ### Phase 5: Features & polish
-- ⬜ Human vs AI · ⬜ Results page · ⬜ How it works · ⬜ a11y/responsive · ⬜ smoke test · ⬜ dev script
+- ✅ Human vs AI · ✅ Results page · ✅ How it works · ⬜ a11y/responsive · ⬜ smoke test · ⬜ dev script
 
 ### Phase 6: Docs & presentation
 - ⬜ README · ⬜ web slide deck · ⬜ demo GIF · ⬜ rehearsals · ⬜ release v1.0
 
 ## Session log
+### 2026-10-30: Build session 2 (with Claude)
+- Frontend built: `frontend/src/{pages,components,lib,types}`; `npm run build` passes (tsc strict).
+- Gotcha: framer-motion 12.x broke with the newer motion-dom; fixed by using framer-motion 14.8.
+- `src/rl/make_plots.py` writes `results/summary/summary.json` + `results/figures/*.png` (served by `/api/results`).
+- Game name left as the placeholder `GAME_NAME` in `frontend/src/lib/format.ts` (user: decide later).
+- First result: DQN on Env A ≈ 14% vs Fixed, ≈ 25% vs Random (3 seeds); the other experiments are still running.
+- Chrome extension didn't respond, so the UI wasn't checked visually.
+- **Next up:** wait for experiments → `python -m src.rl.make_plots` → check the UI in a browser → README + web slide deck.
+
 ### 2026-10-30: Build session 1 (with Claude)
 - Created the private GitHub repo; all commits use the user's identity (D-017).
 - Phase 1 done: engine (`src/engine`), bots (`src/bots`) and 41 tests passing (`pytest -q`).
